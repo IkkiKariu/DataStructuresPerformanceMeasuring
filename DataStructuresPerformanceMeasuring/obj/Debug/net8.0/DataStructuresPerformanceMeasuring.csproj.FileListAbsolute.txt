@@ -12,3 +12,4 @@ C:\Projects\CS\DataStructuresPerformanceMeasuring\DataStructuresPerformanceMeasu
 C:\Projects\CS\DataStructuresPerformanceMeasuring\DataStructuresPerformanceMeasuring\obj\Debug\net8.0\DataStructuresPerformanceMeasuring.pdb
 C:\Projects\CS\DataStructuresPerformanceMeasuring\DataStructuresPerformanceMeasuring\obj\Debug\net8.0\DataStructuresPerformanceMeasuring.genruntimeconfig.cache
 C:\Projects\CS\DataStructuresPerformanceMeasuring\DataStructuresPerformanceMeasuring\obj\Debug\net8.0\ref\DataStructuresPerformanceMeasuring.dll
+C:\Projects\CS\DataStructuresPerformanceMeasuring\DataStructuresPerformanceMeasuring\obj\Debug\net8.0\DataStructuresPerformanceMeasuring.sourcelink.json

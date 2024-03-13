@@ -12,11 +12,11 @@ namespace DataStructuresPerformanceMeasuring
         public static void MakeTast()
         {
             //-> Base Binary Tree testing
-            BinaryTree _tree = new BinaryTree();
+            //BinaryTree _tree = new BinaryTree();
 
             //-> Inserting
 
-            _tree.Insert(20);
+            /*_tree.Insert(20);
             _tree.Insert(15);
             _tree.Insert(13);
             _tree.Insert(17);
@@ -26,17 +26,17 @@ namespace DataStructuresPerformanceMeasuring
             _tree.Insert(35);
             _tree.Insert(36);
 
-            Console.WriteLine("asd");
+            Console.WriteLine("asd");*/
 
             //<-
 
 
             //-> AVLBinaryTreeTesting
-            //AVLBinaryTree _avlTree = new AVLBinaryTree();
+            AVLBinaryTree _avlTree = new AVLBinaryTree();
 
             //-> Inserting
 
-            /*_avlTree.Insert(20);
+            _avlTree.Insert(20);
             _avlTree.Insert(15);
             _avlTree.Insert(13);
             _avlTree.Insert(17);
@@ -45,8 +45,15 @@ namespace DataStructuresPerformanceMeasuring
             _avlTree.Insert(23);
             _avlTree.Insert(35);
             _avlTree.Insert(36);
+            _avlTree.Insert(37);
+            _avlTree.Insert(27);
+            _avlTree.Insert(40);
+            _avlTree.Insert(24);
+            _avlTree.Insert(37);
+            _avlTree.Insert(100);
+            _avlTree.Insert(101);
 
-            Console.WriteLine("cmpltd!");*/
+            Console.WriteLine("cmpltd!");
         }
     }
 }

@@ -6,21 +6,14 @@ using System.Threading.Tasks;
 
 namespace DataStructuresPerformanceMeasuring.Models
 {
-    public class AVLBinaryTreeNode //: IBinarySearchTreeNode
+    class AVLBinaryTreeNode
     {
         public int Value;
-
         public AVLBinaryTreeNode Left;
-
         public AVLBinaryTreeNode Right;
-
-        public int Height;
-
-
-        public AVLBinaryTreeNode(int data)
+        public AVLBinaryTreeNode(int value)
         {
-            Value = data;
-            Height = 1;
+            this.Value = value;
         }
     }
 }

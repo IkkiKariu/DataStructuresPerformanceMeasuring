@@ -14,7 +14,23 @@ namespace DataStructuresPerformanceMeasuring
         {
             var pm = new PerfomanceMeasuring();
 
-            int[] inputData = new int[] { 23, 44, 103, 1, 22, 65, 88, 34, 111, 98 };
+            Random rand = new Random();
+
+            //int[] inputData = new int[] { 23, 44, 103, 1, 22, 65, 88, 34, 111, 98, 30, 71, 89, 100, 300, 211, 66, 91, 143, 233 };
+            int[] inputData = new int[30];
+
+            for (int i = 0; i < inputData.Length; i++)
+            {
+                inputData[i] = rand.Next(1, 1501);
+            }
+
+            int[] notContainedInputData = new int[30];
+
+            for (int i = 0; i < inputData.Length; i++)
+            {
+                inputData[i] = GenerateNumExcept(rand, inputData);
+            }
+
 
             var tree = new BinaryTree();
             var avlTree = new AVLBinaryTree();
@@ -46,7 +62,32 @@ namespace DataStructuresPerformanceMeasuring
             Console.WriteLine($"Среднее время поиска существующего элемента в обычном дереве: {res}  ms");
 
             res = pm.MeasureListBinSearches(list, inputData, inputData.Length);
-            Console.WriteLine($"Среднее время поиска существующего элемента в списке: {res}  ms");
+            Console.WriteLine($"Среднее время бинарного поиска существующего элемента в списке: {res}  ms");
+
+            res = pm.MeasureSearching(avlTree, notContainedInputData, notContainedInputData.Length);
+            Console.WriteLine($"Среднее время поиска случайного НЕ существующего элемента в АВЛ дереве: {res}  ms");
+
+            res = pm.MeasureSearching(tree, notContainedInputData, notContainedInputData.Length);
+            Console.WriteLine($"Среднее время поиска НЕ существующего элемента в обычном дереве: {res}  ms");
+
+            res = pm.MeasureListBinSearches(list, notContainedInputData, notContainedInputData.Length);
+            Console.WriteLine($"Среднее время бинарного поиска НЕ существующего элемента в списке: {res}  ms");
+
+
+            Console.WriteLine();
+
+            Console.WriteLine("Обход бинарного АВЛ дерева в глубину: ");
+            res = pm.MeasureTreeGoAround(avlTree).TotalMilliseconds;
+            Console.WriteLine($"Время в ms: {res}");
+
+
+            Console.WriteLine();
+
+            Console.WriteLine("Обход обычного бинарного дерева в ширину: ");
+            res = pm.MeasureTreeGoAround(tree).TotalMilliseconds;
+            Console.WriteLine($"Время в ms: {res}");
+            Console.WriteLine();
+
 
             res = pm.MeasureRemovings(avlTree, inputData, inputData.Length);
             Console.WriteLine($"Среднее время удаления всех элементов АВЛ дерева: {res}  ms");
@@ -57,18 +98,19 @@ namespace DataStructuresPerformanceMeasuring
             res = pm.MeasureListRemoving(list, inputData, inputData.Length);
             Console.WriteLine($"Среднее время удаления всех элементов списка: {res}  ms");
 
-            Console.WriteLine();
+            //Test.MakeTast();
+        }
 
-            Console.WriteLine("Обход бинарного АВЛ дерева в ширину: ");
-            res = pm.MeasureTreeGoAround(avlTree).TotalMilliseconds;
-            Console.WriteLine($"Время в ms: {res}");
+        static int GenerateNumExcept(Random rand, int[] inputData)
+        {
+            int randNum;
 
-
-            Console.WriteLine();
-
-            Console.WriteLine("Обход обычного бинарного дерева в ширину: ");
-            res = pm.MeasureTreeGoAround(tree).TotalMilliseconds;
-            Console.WriteLine($"Время в ms: {res}");
+            do
+            {
+                randNum = rand.Next(1, 1501);
+            } while (inputData.Contains(randNum));
+            
+            return randNum;
         }
     }
 }

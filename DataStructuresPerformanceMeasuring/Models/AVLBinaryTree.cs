@@ -1,214 +1,184 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DataStructuresPerformanceMeasuring.Models
 {
-    public class AVLBinaryTree //: IBinarySearchTree
+    class AVLBinaryTree
     {
-        private AVLBinaryTreeNode _root;
-
-        private int Height(AVLBinaryTreeNode node)
+        public AVLBinaryTreeNode root;
+        public AVLBinaryTree()
         {
-            if (node == null)
-                return 0;
-
-            return node.Height;
         }
-
-
-        // Разница высот поддеревьев узла
-        private int HeightDifference(AVLBinaryTreeNode node)
-        {
-            if (node == null)
-                return 0;
-
-            return Height(node.Left) - Height(node.Right);
-        }
-
-        // Высота узла на основе выстот его поддеревьев
-        private void UpdateHeight(AVLBinaryTreeNode node)
-        {
-            node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;
-        }
-
-        private AVLBinaryTreeNode RotateRight(AVLBinaryTreeNode y)
-        {
-            AVLBinaryTreeNode x = y.Left;
-            AVLBinaryTreeNode T = x.Right;
-
-            x.Right = y;
-            y.Left = T;
-
-            UpdateHeight(y);
-            UpdateHeight(x);
-
-            return x;
-        }
-
-        private AVLBinaryTreeNode RotateLeft(AVLBinaryTreeNode x)
-        {
-            AVLBinaryTreeNode y = x.Right;
-            AVLBinaryTreeNode T = y.Left;
-
-            y.Left = x;
-            x.Right = T;
-
-            UpdateHeight(x);
-            UpdateHeight(y);
-
-            return y;
-        }
-
         public void Insert(int data)
         {
-            _root = _insert(_root, data);
-        }
-
-        private AVLBinaryTreeNode _insert(AVLBinaryTreeNode node, int data)
-        {
-            if (node == null)
-                return new AVLBinaryTreeNode(data);
-
-            if (data < node.Value)
-                node.Left = _insert(node.Left, data);
-            else if (data > node.Value)
-                node.Right = _insert(node.Right, data);
-            else
-                return node;
-
-            UpdateHeight(node);
-
-            int balance = HeightDifference(node);
-
-            // LL:  Левая часть левого дерева перевешивает
-            if (balance > 1 && data < node.Left.Value)
-                return RotateRight(node);
-
-            // RR:  Правая часть правого дерева перевешивает
-            if (balance < -1 && data > node.Right.Value)
-                return RotateLeft(node);
-
-            // LR
-            if (balance > 1 && data > node.Left.Value)
+            AVLBinaryTreeNode newItem = new AVLBinaryTreeNode(data);
+            if (root == null)
             {
-                node.Left = RotateLeft(node.Left);
-                return RotateRight(node);
+                root = newItem;
             }
-
-            // RL
-            if (balance < -1 && data < node.Right.Value)
-            {
-                node.Right = RotateRight(node.Right);
-                return RotateLeft(node);
-            }
-
-            return node;
-        }
-
-        public AVLBinaryTreeNode Search(int data)
-        {
-            return _search(_root, data);
-        }
-
-        private AVLBinaryTreeNode _search(AVLBinaryTreeNode node, int data)
-        {
-            if (node == null || node.Value == data)
-                return node;
-
-            if (data < node.Value)
-                return _search(node.Left, data);
-
-            return _search(node.Right, data);
-        }
-
-        public void Remove(int data)
-        {
-            _root = _remove(_root, data);
-        }
-
-        private AVLBinaryTreeNode _remove(AVLBinaryTreeNode node, int data)
-        {
-            if (node == null)
-                return node;
-
-            if (data < node.Value)
-                node.Left = _remove(node.Left, data);
-            else if (data > node.Value)
-                node.Right = _remove(node.Right, data);
             else
             {
-                if (node.Left == null || node.Right == null)
+                root = _insert(root, newItem);
+            }
+        }
+        private AVLBinaryTreeNode _insert(AVLBinaryTreeNode current, AVLBinaryTreeNode n)
+        {
+            if (current == null)
+            {
+                current = n;
+                return current;
+            }
+            else if (n.Value < current.Value)
+            {
+                current.Left = _insert(current.Left, n);
+                current = balance_tree(current);
+            }
+            else if (n.Value > current.Value)
+            {
+                current.Right = _insert(current.Right, n);
+                current = balance_tree(current);
+            }
+            return current;
+        }
+        private AVLBinaryTreeNode balance_tree(AVLBinaryTreeNode current)
+        {
+            int b_factor = balance_factor(current);
+            if (b_factor > 1)
+            {
+                if (balance_factor(current.Left) > 0)
                 {
-                    AVLBinaryTreeNode temp = null;
-                    if (temp == node.Left)
-                        temp = node.Right;
-                    else
-                        temp = node.Left;
-
-                    if (temp == null)
-                    {
-                        temp = node;
-                        node = null;
-                    }
-                    else
-                        node = temp;
+                    current = RotateLL(current);
                 }
                 else
                 {
-                    AVLBinaryTreeNode temp = MinValueNode(node.Right);
-                    node.Value = temp.Value;
-
-                    node.Right = _remove(node.Right, temp.Value);
+                    current = RotateLR(current);
                 }
             }
-
-            if (node == null)
-                return node;
-
-            UpdateHeight(node);
-
-            int balance = HeightDifference(node);
-
-            // LL
-            if (balance > 1 && HeightDifference(node.Left) >= 0)
-                return RotateRight(node);
-
-            // LR
-            if (balance > 1 && HeightDifference(node.Left) < 0)
+            else if (b_factor < -1)
             {
-                node.Left = RotateLeft(node.Left);
-                return RotateRight(node);
+                if (balance_factor(current.Right) > 0)
+                {
+                    current = RotateRL(current);
+                }
+                else
+                {
+                    current = RotateRR(current);
+                }
             }
-
-            // RR
-            if (balance < -1 && HeightDifference(node.Right) <= 0)
-                return RotateLeft(node);
-
-            // RL
-            if (balance < -1 && HeightDifference(node.Right) > 0)
-            {
-                node.Right = RotateRight(node.Right);
-                return RotateLeft(node);
-            }
-
-            return node;
-        }
-
-        private AVLBinaryTreeNode MinValueNode(AVLBinaryTreeNode node)
-        {
-            AVLBinaryTreeNode current = node;
-
-            while (current.Left != null)
-                current = current.Left;
-
             return current;
+        }
+        public void Remove(int target)
+        {
+            root = _remove(root, target);
+        }
+        private AVLBinaryTreeNode _remove(AVLBinaryTreeNode current, int target)
+        {
+            AVLBinaryTreeNode parent;
+            if (current == null)
+            { return null; }
+            else
+            {
+                
+                if (target < current.Value)
+                {
+                    current.Left = _remove(current.Left, target);
+                    if (balance_factor(current) == -2)
+                    {
+                        if (balance_factor(current.Right) <= 0)
+                        {
+                            current = RotateRR(current);
+                        }
+                        else
+                        {
+                            current = RotateRL(current);
+                        }
+                    }
+                }
+                
+                else if (target > current.Value)
+                {
+                    current.Right = _remove(current.Right, target);
+                    if (balance_factor(current) == 2)
+                    {
+                        if (balance_factor(current.Left) >= 0)
+                        {
+                            current = RotateLL(current);
+                        }
+                        else
+                        {
+                            current = RotateLR(current);
+                        }
+                    }
+                }
+                
+                else
+                {
+                    if (current.Right != null)
+                    {
+                        
+                        parent = current.Right;
+                        while (parent.Left != null)
+                        {
+                            parent = parent.Left;
+                        }
+                        current.Value = parent.Value;
+                        current.Right = _remove(current.Right, parent.Value);
+                        if (balance_factor(current) == 2)
+                        {
+                            if (balance_factor(current.Left) >= 0)
+                            {
+                                current = RotateLL(current);
+                            }
+                            else { current = RotateLR(current); }
+                        }
+                    }
+                    else
+                    {   
+                        return current.Left;
+                    }
+                }
+            }
+            return current;
+        }
+        public AVLBinaryTreeNode? Search(int value)
+        {
+            return _search(value, root);
+
+            
+        }
+        private AVLBinaryTreeNode? _search(int value, AVLBinaryTreeNode current)
+        {
+            if (current == null)
+                return null;
+
+            if (value < current.Value)
+            {
+                /*if (value == current.Value)
+                {
+                    return current;
+                }
+                else*/
+                    return _search(value, current.Left);
+            }
+            else
+            {
+                if (value == current.Value)
+                {
+                    return current;
+                }
+                else
+                    return _search(value, current.Right);
+            }
+
         }
         public void GoAroundInDepth()
         {
-            _goAroundInDepth(_root);
+            _goAroundInDepth(root);
             Console.WriteLine();
         }
 
@@ -220,6 +190,55 @@ namespace DataStructuresPerformanceMeasuring.Models
                 _goAroundInDepth(node.Left);
                 _goAroundInDepth(node.Right);
             }
+        }
+        private int max(int l, int r)
+        {
+            return l > r ? l : r;
+        }
+        private int getHeight(AVLBinaryTreeNode current)
+        {
+            int height = 0;
+            if (current != null)
+            {
+                int l = getHeight(current.Left);
+                int r = getHeight(current.Right);
+                int m = max(l, r);
+                height = m + 1;
+            }
+            return height;
+        }
+        private int balance_factor(AVLBinaryTreeNode current)
+        {
+            int l = getHeight(current.Left);
+            int r = getHeight(current.Right);
+            int b_factor = l - r;
+            return b_factor;
+        }
+        private AVLBinaryTreeNode RotateRR(AVLBinaryTreeNode parent)
+        {
+            AVLBinaryTreeNode pivot = parent.Right;
+            parent.Right = pivot.Left;
+            pivot.Left = parent;
+            return pivot;
+        }
+        private AVLBinaryTreeNode RotateLL(AVLBinaryTreeNode parent)
+        {
+            AVLBinaryTreeNode pivot = parent.Left;
+            parent.Left = pivot.Right;
+            pivot.Right = parent;
+            return pivot;
+        }
+        private AVLBinaryTreeNode RotateLR(AVLBinaryTreeNode parent)
+        {
+            AVLBinaryTreeNode pivot = parent.Left;
+            parent.Left = RotateRR(pivot);
+            return RotateLL(parent);
+        }
+        private AVLBinaryTreeNode RotateRL(AVLBinaryTreeNode parent)
+        {
+            AVLBinaryTreeNode pivot = parent.Right;
+            parent.Right = RotateLL(pivot);
+            return RotateRR(parent);
         }
     }
 }
